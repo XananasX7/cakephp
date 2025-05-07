@@ -197,6 +197,8 @@ trait IntegrationTestTrait
      */
     protected string $_csrfKeyName = 'csrfToken';
 
+    protected bool $needsHandlerRestore = false;
+
     /**
      * Clears the state used for requests.
      *
@@ -218,6 +220,14 @@ trait IntegrationTestTrait
         $this->_csrfToken = false;
         $this->_retainFlashMessages = false;
         $this->_flashMessages = [];
+
+        if ($this->needsHandlerRestore) {
+            restore_error_handler();
+            restore_exception_handler();
+            restore_error_handler();
+            restore_exception_handler();
+            $this->needsHandlerRestore = false;
+        }
     }
 
     /**
@@ -1399,6 +1409,7 @@ trait IntegrationTestTrait
     public function disableErrorHandlerMiddleware(): void
     {
         Configure::write('Error.exceptionRenderer', TestExceptionRenderer::class);
+        $this->needsHandlerRestore = true;
     }
 
     /**
