@@ -369,7 +369,8 @@ class CommandRunnerTest extends TestCase
         $container = $app->getContainer();
         $container->add(stdClass::class, json_decode('{"key":"value"}'));
         $container->add(DependencyCommand::class)
-            ->addArgument(stdClass::class);
+            ->addArgument(stdClass::class)
+            ->addArgument(ConsoleIo::class);
 
         $output = new StubConsoleOutput();
 
@@ -380,6 +381,7 @@ class CommandRunnerTest extends TestCase
         $messages = implode("\n", $output->messages());
         $this->assertStringContainsString('Dependency Command', $messages);
         $this->assertStringContainsString('constructor inject: {"key":"value"}', $messages);
+        $this->assertMatchesRegularExpression('/constructor io: .*?ConsoleIo/', $messages);
     }
 
     /**

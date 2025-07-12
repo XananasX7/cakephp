@@ -234,7 +234,7 @@ class CommandRunner implements EventDispatcherInterface
     {
         $instance = $commands->get($name);
         if (is_string($instance)) {
-            $instance = $this->createCommand($instance);
+            $instance = $this->createCommand($instance, $io);
         }
 
         $instance->setName("{$this->root} {$name}");
@@ -345,15 +345,21 @@ class CommandRunner implements EventDispatcherInterface
      * The wrapper for creating command instances.
      *
      * @param string $className Command class name.
+     * @param \Cake\Console\ConsoleIo $io The ConsoleIo instance.
      * @return \Cake\Console\CommandInterface
      */
-    protected function createCommand(string $className): CommandInterface
+    protected function createCommand(string $className, ConsoleIo $io): CommandInterface
     {
         if (!$this->factory) {
             $container = null;
             if ($this->app instanceof ContainerApplicationInterface) {
                 $container = $this->app->getContainer();
             }
+            // Should we backport the interface from 6.x?
+            // We can't add `Arguments` at this point because it requires an instance
+            // of the command in order to build the option parser.
+            // We could add an `Argv` wrapper around the array? Could be a type alias for ArrayObject.
+            $container->addShared(ConsoleIo::class, $io);
 
             $this->factory = new CommandFactory($container);
             $container?->add(CommandFactoryInterface::class, $this->factory);
