@@ -47,7 +47,7 @@ class Index
      * @param array<string, int>|int|null $length The length of the index.
      * @param array<string>|null $order The sort order of the index columns.
      * @param array<string>|null $includedColumns The included columns for covering indexes.
-     * @param bool $concurrent Whether the index should be created concurrently.
+     * @param ?bool $concurrent Whether the index should be created concurrently.
      * @param ?string $where The where clause for partial indexes.
      */
     public function __construct(
@@ -57,7 +57,7 @@ class Index
         protected array|int|null $length = null,
         protected ?array $order = null,
         protected ?array $includedColumns = null,
-        protected bool $concurrent = false,
+        protected ?bool $concurrent = null,
         protected ?string $where = null,
     ) {
     }
@@ -230,7 +230,7 @@ class Index
      *
      * @return bool
      */
-    public function getConcurrent(): bool
+    public function getConcurrent(): ?bool
     {
         return $this->concurrent;
     }

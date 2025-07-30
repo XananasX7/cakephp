@@ -850,7 +850,6 @@ SQL;
             'type' => 'index',
             'columns' => ['author_id'],
             'length' => [],
-            'concurrent' => false,
         ];
         $this->assertEquals($authorIdx, $result->getIndex('author_idx'));
 
@@ -937,7 +936,6 @@ SQL;
             'type' => 'index',
             'columns' => ['group_id', 'grade'],
             'length' => [],
-            'concurrent' => false,
         ];
         $this->assertEquals($expected, $result->getIndex('schema_index_nulls'));
         $connection->execute('DROP TABLE schema_index');
@@ -974,6 +972,49 @@ SQL;
             'generated' => null,
         ];
         $this->assertEquals($expected, $result->getColumn('year'));
+    }
+
+    /**
+     * Test provider for indexSql()
+     *
+     * @return array
+     */
+    public static function indexSqlProvider(): array
+    {
+        return [
+            [
+                'concurrent_idx',
+                ['type' => 'index', 'columns' => ['title'], 'concurrent' => true],
+                'CREATE INDEX CONCURRENTLY "concurrent_idx" ON "articles" ("title")',
+            ],
+            [
+                'locking_idx',
+                ['type' => 'index', 'columns' => ['title'], 'concurrent' => false],
+                'CREATE INDEX "locking_idx" ON "articles" ("title")',
+            ],
+            [
+                'no_locking_idx',
+                ['type' => 'index', 'columns' => ['title']],
+                'CREATE INDEX "no_locking_idx" ON "articles" ("title")',
+            ],
+        ];
+    }
+
+    /**
+     * Test the indexSql method.
+     */
+    #[DataProvider('indexSqlProvider')]
+    public function testIndexSql(string $name, array $data, string $expected): void
+    {
+        $driver = $this->_getMockedDriver();
+        $schema = new PostgresSchemaDialect($driver);
+
+        $table = (new TableSchema('articles'))
+            ->addColumn('title', ['type' => 'string', 'length' => 255])
+            ->addColumn('author_id', ['type' => 'integer'])
+            ->addIndex($name, $data);
+
+        $this->assertEquals($expected, $schema->indexSql($table, $name));
     }
 
     /**

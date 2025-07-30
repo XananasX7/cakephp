@@ -212,6 +212,7 @@ class TableSchema implements TableSchemaInterface, SqlGeneratorInterface
         'delete' => 'restrict',
         'constraint' => null,
         'deferrable' => null,
+        'concurrent' => null,
     ];
 
     /**
@@ -657,6 +658,8 @@ class TableSchema implements TableSchemaInterface, SqlGeneratorInterface
         }
         $attrs = array_intersect_key($attrs, static::$_indexKeys);
         $attrs += static::$_indexKeys;
+        unset($attrs['concurrent']);
+
         if ($attrs['constraint'] === null) {
             unset($attrs['constraint']);
         }
@@ -838,7 +841,7 @@ class TableSchema implements TableSchemaInterface, SqlGeneratorInterface
                 $data['constraint'] = $alias;
             }
         }
-        unset($data['name']);
+        unset($data['name'], $data['concurrent']);
 
         return $data;
     }

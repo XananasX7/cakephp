@@ -337,6 +337,8 @@ interface TableSchemaInterface extends SchemaInterface
      * Used to add constraints to a table. For example primary keys, unique
      * keys and foreign keys.
      *
+     * TODO expand these docs and copy/paste with the components
+     *
      * ### Attributes
      *
      * - `type` The type of constraint being added.

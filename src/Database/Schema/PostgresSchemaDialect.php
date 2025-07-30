@@ -883,7 +883,8 @@ class PostgresSchemaDialect extends SchemaDialect
         );
 
         return sprintf(
-            'CREATE INDEX %s ON %s (%s)',
+            'CREATE INDEX %s%s ON %s (%s)',
+            $data['concurrent'] ?? null ? 'CONCURRENTLY ' : '',
             $this->_driver->quoteIdentifier($name),
             $this->_driver->quoteIdentifier($schema->name()),
             implode(', ', $columns),
