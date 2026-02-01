@@ -1217,7 +1217,7 @@ class PaginatorHelper extends Helper
             $scope .= '.';
         }
 
-        $out = $this->Form->create(null, ['type' => 'get', 'url' => []]);
+        $out = $this->Form->create(null, ['type' => 'get', 'url' => $this->_View->getRequest()->getPath()]);
 
         $out .= $this->generateHiddenFields($hiddenFields);
 
